@@ -1,10 +1,10 @@
-
+import Forms from './components/Forms/index'
 import './App.css'
 
 const App = () => {
   return (
-    <div className="App">
-      <h1>hello world</h1>
+    <div className="container">
+      <Forms/>
     </div>
   )
 }
