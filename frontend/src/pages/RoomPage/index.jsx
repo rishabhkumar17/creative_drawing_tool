@@ -82,6 +82,7 @@ const RoomPage = () => {
           contextRef={contextRef}
           elements={elements}
           setElements={setElements}
+          tool={tool}
         />
       </div>
     </div>
