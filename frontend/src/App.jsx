@@ -1,5 +1,5 @@
 import Forms from './components/Forms/index'
-import RoomPage from './components/WhiteBoard/index'
+import RoomPage from './pages/RoomPage/index'
 import { Route, Routes } from 'react-router-dom'
 
 import './App.css'
