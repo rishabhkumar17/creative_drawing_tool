@@ -8,7 +8,7 @@ const RoomPage = () => {
   const contextRef = useRef(null)
 
   const [tool, setTool] = useState('pencil')
-  const [color, setColor] = useState('black')
+  const [color, setColor] = useState('#000000')
   const [elements, setElements] = useState([])
 
   return (
