@@ -3,7 +3,14 @@ import rough from 'roughjs'
 
 const roughGenerator = rough.generator()
 
-const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
+const WhiteBoard = ({
+  canvasRef,
+  contextRef,
+  elements,
+  setElements,
+  tool,
+  color,
+}) => {
   const [isDrawing, setIsDrawing] = useState(false)
 
   useEffect(() => {
@@ -12,8 +19,16 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
     canvas.width = window.innerWidth * 2
     const context = canvas.getContext('2d')
 
+    context.strokeStyle = color
+    context.lineWidth = 2
+    context.lineCap = 'round'
+
     contextRef.current = context
-  }, [])
+  }, [color])
+
+  useEffect(() => {
+    contextRef.current.strokeStyle = color
+  }, [color])
 
   useLayoutEffect(() => {
     if (canvasRef) {
@@ -35,7 +50,12 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
               element.offsetX,
               element.offsetY,
               element.width,
-              element.height
+              element.height,
+              {
+                stroke: element.stroke,
+                strokeWidth: 5,
+                roughness: 0,
+              }
             )
           )
         } else if (element.type === 'line') {
@@ -44,11 +64,20 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
               element.offsetX,
               element.offsetY,
               element.width,
-              element.height
+              element.height,
+              {
+                stroke: element.stroke,
+                strokeWidth: 5,
+                roughness: 0,
+              }
             )
           )
         } else if (element.type === 'pencil') {
-          roughCanvas.linearPath(element.path)
+          roughCanvas.linearPath(element.path, {
+            stroke: element.stroke,
+            strokeWidth: 5,
+            roughness: 0,
+          })
         }
       })
     }
@@ -66,7 +95,7 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
           offsetX,
           offsetY,
           path: [[offsetX, offsetY]],
-          stroke: 'black',
+          stroke: color,
         },
       ])
     } else if (tool === 'line') {
@@ -78,7 +107,7 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
           offsetY,
           width: offsetX,
           height: offsetY,
-          stroke: 'black',
+          stroke: color,
         },
       ])
     } else if (tool === 'rect') {
@@ -90,7 +119,7 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
           offsetY,
           width: 0,
           height: 0,
-          stroke: 'black',
+          stroke: color,
         },
       ])
     }
