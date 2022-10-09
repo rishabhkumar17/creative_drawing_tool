@@ -16,31 +16,42 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
   }, [])
 
   useLayoutEffect(() => {
-    const roughCanvas = rough.canvas(canvasRef.current)
+    if (canvasRef) {
+      const roughCanvas = rough.canvas(canvasRef.current)
 
-    if (elements.length > 0) {
-      contextRef.current.clearRect(
-        0,
-        0,
-        canvasRef.current.width,
-        canvasRef.current.height
-      )
-    }
-
-    elements.forEach((element) => {
-      if (element.type === 'pencil') {
-        roughCanvas.linearPath(element.path)
-      } else if (element.type === 'line') {
-        roughCanvas.draw(
-          roughGenerator.line(
-            element.offsetX,
-            element.offsetY,
-            element.width,
-            element.height
-          )
+      if (elements.length > 0) {
+        contextRef.current.clearRect(
+          0,
+          0,
+          canvasRef.current.width,
+          canvasRef.current.height
         )
       }
-    })
+
+      elements.forEach((element) => {
+        if (element.type === 'rect') {
+          roughCanvas.draw(
+            roughGenerator.rectangle(
+              element.offsetX,
+              element.offsetY,
+              element.width,
+              element.height
+            )
+          )
+        } else if (element.type === 'line') {
+          roughCanvas.draw(
+            roughGenerator.line(
+              element.offsetX,
+              element.offsetY,
+              element.width,
+              element.height
+            )
+          )
+        } else if (element.type === 'pencil') {
+          roughCanvas.linearPath(element.path)
+        }
+      })
+    }
   }, [elements])
 
   const handleMouseDown = (e) => {
@@ -55,7 +66,7 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
           offsetX,
           offsetY,
           path: [[offsetX, offsetY]],
-          storke: 'black',
+          stroke: 'black',
         },
       ])
     } else if (tool === 'line') {
@@ -67,7 +78,19 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
           offsetY,
           width: offsetX,
           height: offsetY,
-          storke: 'black',
+          stroke: 'black',
+        },
+      ])
+    } else if (tool === 'rect') {
+      setElements((prevElements) => [
+        ...prevElements,
+        {
+          type: 'rect',
+          offsetX,
+          offsetY,
+          width: 0,
+          height: 0,
+          stroke: 'black',
         },
       ])
     }
@@ -102,6 +125,20 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
                 ...ele,
                 width: offsetX,
                 height: offsetY,
+              }
+            } else {
+              return ele
+            }
+          })
+        )
+      } else if (tool === 'rect') {
+        setElements((prevElements) =>
+          prevElements.map((ele, index) => {
+            if (index === elements.length - 1) {
+              return {
+                ...ele,
+                width: offsetX - ele.offsetX,
+                height: offsetY - ele.offsetY,
               }
             } else {
               return ele
