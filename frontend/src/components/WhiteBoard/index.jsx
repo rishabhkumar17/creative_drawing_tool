@@ -18,15 +18,26 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
   useLayoutEffect(() => {
     const roughCanvas = rough.canvas(canvasRef.current)
 
+    if (elements.length > 0) {
+      contextRef.current.clearRect(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height
+      )
+    }
+
     elements.forEach((element) => {
       if (element.type === 'pencil') {
         roughCanvas.linearPath(element.path)
       } else if (element.type === 'line') {
-        roughGenerator.line(
-          element.offsetX,
-          element.offsetY,
-          element.width,
-          element.height
+        roughCanvas.draw(
+          roughGenerator.line(
+            element.offsetX,
+            element.offsetY,
+            element.width,
+            element.height
+          )
         )
       }
     })
@@ -112,7 +123,7 @@ const WhiteBoard = ({ canvasRef, contextRef, elements, setElements, tool }) => {
       onMouseUp={handleMouseUp}
       className="border border-dark border-3 h-100 w-100 overflow-hidden"
     >
-      <canvas ref={canvasRef}></canvas>
+      <canvas ref={canvasRef} />
     </div>
   )
 }
