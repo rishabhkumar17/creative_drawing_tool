@@ -2,6 +2,7 @@ import './index.css'
 import { useRef, useState } from 'react'
 
 import WhiteBoard from '../../components/WhiteBoard'
+import { UNSAFE_DataRouterContext } from 'react-router-dom'
 
 const RoomPage = () => {
   const canvasRef = useRef(null)
@@ -10,6 +11,7 @@ const RoomPage = () => {
   const [tool, setTool] = useState('pencil')
   const [color, setColor] = useState('#000000')
   const [elements, setElements] = useState([])
+  const [history, setHistory] = useState([])
 
   const handleClearCanvas = () => {
     const canvas = canvasRef.current
@@ -19,6 +21,20 @@ const RoomPage = () => {
     setElements([])
   }
 
+  const handleUndo = () => {
+    setHistory((prevHistory) => [...prevHistory, elements[elements.length - 1]])
+    setElements((prevElements) =>
+      prevElements.slice(0, prevElements.length - 1)
+    )
+  }
+
+  const handleRedo = () => {
+    setElements((prevElements) => [
+      ...prevElements,
+      history[history.length - 1],
+    ])
+    setHistory((prevHistory) => prevHistory.slice(0, prevHistory.length - 1))
+  }
   return (
     <div className="row">
       <h1 className="text-center py-4">
@@ -77,8 +93,20 @@ const RoomPage = () => {
           </div>
         </div>
         <div className="col-md-3 d-flex gap-2">
-          <button className="btn btn-primary mt-1">Undo</button>
-          <button className="btn btn-outline-primary mt-1">Redo</button>
+          <button
+            className="btn btn-primary mt-1"
+            disabled={elements.length === 0}
+            onClick={() => handleUndo()}
+          >
+            Undo
+          </button>
+          <button
+            className="btn btn-outline-primary mt-1"
+            disabled={history.length < 1}
+            onClick={() => handleRedo()}
+          >
+            Redo
+          </button>
         </div>
         <div className="col-md-2">
           <button className="btn btn-danger" onClick={handleClearCanvas}>
