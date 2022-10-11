@@ -10,7 +10,32 @@ const WhiteBoard = ({
   setElements,
   tool,
   color,
+  user,
+  socket,
 }) => {
+  const [img, setImg] = useState(null)
+
+  useEffect(() => {
+    socket.on('whiteBoardDataResponse', (data) => {
+      setImg(data.imgURL)
+    })
+  }, [])
+
+  if (!user?.presenter) {
+    return (
+      <div className="border border-dark border-3 h-100 w-100 overflow-hidden">
+        <img
+          src={img}
+          alt="Real time white board image shared by presenter"
+          style={{
+            height: window.innerHeight * 1.5,
+            width: '200%',
+          }}
+        />
+      </div>
+    )
+  }
+
   const [isDrawing, setIsDrawing] = useState(false)
 
   useEffect(() => {
@@ -24,7 +49,7 @@ const WhiteBoard = ({
     context.lineCap = 'round'
 
     contextRef.current = context
-  }, [color])
+  }, [])
 
   useEffect(() => {
     contextRef.current.strokeStyle = color
@@ -80,6 +105,8 @@ const WhiteBoard = ({
           })
         }
       })
+      const canvasImage = canvasRef.current.toDataURL()
+      socket.emit('whiteBoardData', canvasImage)
     }
   }, [elements])
 
